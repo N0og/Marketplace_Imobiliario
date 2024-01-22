@@ -2,14 +2,16 @@ import 'reflect-metadata';
 import express from "express";
 import cors from 'cors';
 import {config as dotenvConfig} from 'dotenv'  ;
-import { AppDataSource } from './database/data-source'
+import { MariaDBDataSource } from './database/data-source'
+import { router } from './routes';
 
 dotenvConfig();
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-AppDataSource.initialize()
+app.use(router)
+MariaDBDataSource.initialize()
     .then(async () => {
         console.log('Database has been initialized.');
         app.listen(process.env.SERVER_PORT, () => {

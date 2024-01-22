@@ -7,7 +7,8 @@
     "start": "nodemon ./src/server.ts",
     "build": "tsc",
     "dev:server": "ts-node-dev src/server.ts",
-    "typeorm": "ts-node-dev ./node_modules/typeorm/cli.js"
+    "typeorm": "typeorm-ts-node-esm",
+    "migration:generate": "typeorm-ts-node-commonjs migration:generate -d ./src/database/data-source.ts ./src/database/migrations/default"
   },
   "repository": {
     "type": "git",
