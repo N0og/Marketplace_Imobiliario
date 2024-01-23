@@ -3,7 +3,8 @@ import {
     Column,
     Entity,
     ManyToOne,
-    CreateDateColumn
+    CreateDateColumn,
+    JoinColumn
 } from "typeorm";
 import { Post } from "./Post";
 
@@ -12,10 +13,11 @@ export class Images {
     @PrimaryGeneratedColumn("uuid")
     id: string
 
-    @Column({type: "varchar", length: 11, nullable:true})
+    @Column({type: "varchar", length: 900, nullable:true})
     url: string
 
     @ManyToOne(() => Post, (post) => post.images)
+    @JoinColumn({name: "post_id"})
     post: Post
 
     @CreateDateColumn()

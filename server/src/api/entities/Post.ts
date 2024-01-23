@@ -5,7 +5,8 @@ import {
     OneToMany,
     Entity,
     ManyToMany,
-    ManyToOne
+    ManyToOne,
+    JoinColumn
 } from "typeorm";
 import { Images } from "./Images";
 import { User } from "./User";
@@ -25,6 +26,7 @@ export class Post {
     content: string
 
     @ManyToOne(() => User, (user) => user.post)
+    @JoinColumn({name: "user_id"})
     user: User
 
     @CreateDateColumn({type:"datetime", nullable:false})

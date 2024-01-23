@@ -18,10 +18,13 @@ export class User {
     @Column({type: "varchar", length: 11, nullable:true})
     cpf: string
 
-    @Column({type: "varchar", length: 11, nullable:false})
+    @Column({type: "varchar", length: 6, nullable:true})
+    creci: string
+
+    @Column({type: "varchar", length: 100, nullable:false})
     email: string
 
-    @Column({type: "varchar", length: 12, nullable:false})
+    @Column({type: "varchar", length: 255, nullable:false})
     password: string
 
     @OneToMany(() => Post, (post) => post.user)
