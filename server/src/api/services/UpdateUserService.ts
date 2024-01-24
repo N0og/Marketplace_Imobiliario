@@ -1,8 +1,17 @@
 import { userRepository } from "../repository/UserRepository";
+import jwt from "jsonwebtoken"
 import { Not } from "typeorm";
+import { config as dotenvConfig } from 'dotenv'
+
+dotenvConfig();
+
+type JwtPayload = {
+    id: string
+}
 
 type UpdateRequest = {
-    id: string;
+    token: string;
+    uuid: string;
     nome: string;
     cpf: string;
     creci: string;
@@ -11,26 +20,36 @@ type UpdateRequest = {
 }
 
 export class UpdateUserService {
-    async execute({ id, nome, cpf, creci, email }: UpdateRequest): Promise<object | Error> {
+    async execute({token, uuid, nome, cpf, creci, email }: UpdateRequest): Promise<object | Error> {
+
+        const { id } = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+     
+        if (!(id === uuid)){
+            return new Error("Unauthorized")
+        };
 
         const user = await userRepository.findOneBy({ id });
 
         if (!user) {
-            return new Error("Auth Error.")
+            return new Error("Usuário não cadastrado")
         }
 
         if (email && await userRepository.findOneBy({
             id: Not(user.id),    
             email: email, 
         })){
-            return new Error("e-mail já cadastrado no sistema.")
+            return new Error("E-mail já cadastrado no sistema")
+        }
+
+        if (cpf && cpf.length > 11){
+            return new Error("CPF Inválido.")
         }
 
         if (cpf && await userRepository.findOneBy({
             id: Not(user.id),    
             email: cpf, 
         })){
-            return new Error("CPF já cadastrado no sistema.")
+            return new Error("CPF já cadastrado no sistema")
         }
 
         if (creci && creci.length > 6) {
@@ -42,11 +61,7 @@ export class UpdateUserService {
             id: Not(user.id),
         })){
             return new Error("CRECI já cadastrada no sistema.")
-        }
-
-        if (cpf && cpf.length > 11){
-            return new Error("CPF Inválido.")
-        }
+        }     
 
         user.nome = nome ? nome : user.nome;
         user.cpf = cpf ? cpf : user.cpf;

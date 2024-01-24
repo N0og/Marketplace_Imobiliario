@@ -31,7 +31,7 @@ export class LoginService{
             return new Error("Email ou senha incorretos.")
         }
 
-        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET || '', { expiresIn: "2h",});
+        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET || '', { expiresIn: "1h",});
 
         const { password: _, ...userWithoutPassword } = user;
 

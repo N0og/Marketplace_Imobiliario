@@ -18,6 +18,9 @@ export class User {
     @Column({type: "varchar", length: 11, nullable:true})
     cpf: string
 
+    @Column({type: "varchar", length: 13, nullable:true})
+    telefone: string
+
     @Column({type: "varchar", length: 6, nullable:true})
     creci: string
 
