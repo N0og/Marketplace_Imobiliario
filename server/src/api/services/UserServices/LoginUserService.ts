@@ -1,7 +1,9 @@
 import { userRepository } from "../../repository/UserRepository";
+import { userTokensRepository } from "../../repository/UserTokenRepository";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import {config as dotenvConfig} from 'dotenv';
+
 dotenvConfig();
 
 type ILoginRequest = {  
@@ -22,9 +24,32 @@ export class LoginService{
             return new Error("Email ou senha incorretos.")
         }
 
-        const token = jwt.sign({ sub: user.id }, process.env.JWT_SECRET || '', { expiresIn: "1h",});
+        const token = jwt.sign({ sub: user.id }, process.env.JWT_SECRET || '', { expiresIn: parseInt(process.env.JWT_EXPIRATION!)});
 
-        const refresh_token = jwt.sign({ sub: user.id }, process.env.JWT_REFRESH_SECRET || '', { expiresIn: "5h"})
+        const refresh_token = jwt.sign({ sub: user.id }, process.env.JWT_REFRESH_SECRET || '', { expiresIn: parseInt(process.env.JWT_REFRESH_EXPIRATION!)})
+
+        const expirationDate = new Date(Date.now() + parseInt(process.env.JWT_REFRESH_EXPIRATION!) * 1000);
+
+
+
+        if (!await userTokensRepository.findOneBy({user_id:user.id})){
+            await userTokensRepository.insert({
+                refresh_token: refresh_token,
+                user_id: user.id,
+                expires_date: expirationDate
+            })
+        }
+
+        else{
+            await userTokensRepository.delete({user_id:user.id })
+            await userTokensRepository.insert({
+                    refresh_token: refresh_token,
+                    user_id: user.id,
+                    expires_date: expirationDate
+                })
+        }
+
+        const user_token = await userTokensRepository.findOneBy({user_id:user.id})
 
         const userWithoutInfos = {
             id: user.id,
@@ -35,7 +60,7 @@ export class LoginService{
         return {
             user: userWithoutInfos,
             token,
-            refresh_token
+            refresh_token: user_token?.id
         }
     }
 }

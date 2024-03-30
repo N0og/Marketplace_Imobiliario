@@ -4,14 +4,15 @@ import {
     Entity,
     JoinColumn,
     ManyToOne,
-    PrimaryColumn
+    PrimaryColumn,
+    PrimaryGeneratedColumn
 } from "typeorm"
 import { User } from "./User";
 
 
 @Entity('auth_user_tokens')
 export class UserTokens{
-    @PrimaryColumn()
+    @PrimaryGeneratedColumn('uuid')
     id: string;
 
     @Column()
@@ -20,11 +21,7 @@ export class UserTokens{
     @Column()
     user_id: string
 
-    @ManyToOne(() => User)
-    @JoinColumn({name: 'user_id'})
-    user: User;
-
-    @Column()
+    @Column({type:"timestamp", nullable:false})
     expires_date: Date
     
     @CreateDateColumn({type:"datetime", nullable:false})
