@@ -1,13 +1,6 @@
-import { userRepository } from "../repository/UserRepository";
-import jwt from "jsonwebtoken"
+import { userRepository } from "../../repository/UserRepository";
 import { Not } from "typeorm";
-import { config as dotenvConfig } from 'dotenv'
 
-dotenvConfig();
-
-type JwtPayload = {
-    id: string
-}
 
 type UpdateRequest = {
     token: string;
@@ -20,15 +13,10 @@ type UpdateRequest = {
 }
 
 export class UpdateUserService {
-    async execute({token, uuid, nome, cpf, creci, email }: UpdateRequest): Promise<object | Error> {
+    async execute({ uuid, nome, cpf, creci, email }: UpdateRequest): Promise<object | Error> {
 
-        const { id } = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
-     
-        if (!(id === uuid)){
-            return new Error("Unauthorized")
-        };
 
-        const user = await userRepository.findOneBy({ id });
+        const user = await userRepository.findOneBy({ id: uuid });
 
         if (!user) {
             return new Error("Usuário não cadastrado")
@@ -47,7 +35,7 @@ export class UpdateUserService {
 
         if (cpf && await userRepository.findOneBy({
             id: Not(user.id),    
-            email: cpf, 
+            cpf: cpf, 
         })){
             return new Error("CPF já cadastrado no sistema")
         }
@@ -57,8 +45,8 @@ export class UpdateUserService {
         }
 
         if (creci && await userRepository.findOneBy({
-            creci: creci,
             id: Not(user.id),
+            creci: creci,   
         })){
             return new Error("CRECI já cadastrada no sistema.")
         }     

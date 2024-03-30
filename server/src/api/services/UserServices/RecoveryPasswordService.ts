@@ -1,6 +1,6 @@
-import { userRepository } from "../repository/UserRepository";
+import { userRepository } from "../../repository/UserRepository";
 import jwt from "jsonwebtoken"
-import { EmailService } from "./EmailService";
+import { EmailService } from "../EmailService";
 
 type RecoveryPasswordRequest = {
     email: string
@@ -22,7 +22,7 @@ export class RecoveryPasswordService{
             from: process.env.EMAIL_USER,
             to: email,
             subject: "Recuperação de Senha",
-            text: `Link para recuperar a senha:\n\n${process.env.BASE_URL}/profile/${token}/confirmedRecover`,
+            text: `Link para recuperar a senha:\n\n${process.env.FRONT_HOST}/profile/${token}/confirmedRecover`,
         })   
 
     }

@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { LoginService } from "../services/LoginUserService";
-import { RegisterService } from "../services/RegisterUserService";
-import { UpdateUserService } from "../services/UpdateUserService";
-import { UpdatePasswordService } from "../services/UpdatePasswordService";
-import { RecoveryPasswordService } from "../services/RecoveryPasswordService";
+import { LoginService } from "../services/UserServices/LoginUserService";
+import { RegisterService } from "../services/UserServices/RegisterUserService";
+import { UpdateUserService } from "../services/UserServices/UpdateUserService";
+import { UpdatePasswordService } from "../services/UserServices/UpdatePasswordService";
+import { RecoveryPasswordService } from "../services/UserServices/RecoveryPasswordService";
 
 export default class UserController {
     async handleServiceRequest(req: Request, res: Response, serviceClass: any, serviceParams: any) {
@@ -34,24 +34,14 @@ export default class UserController {
     }
 
     handleUpdate = async (req: Request, res: Response) => {
-        const { authorization } = req.headers
-        if(!authorization){
-            return res.status(401).json({error: "Unauthorized"});
-        };
-        const token = authorization.split(" ")[1];
         const { uuid, nome, telefone, cpf, creci, email } = req.body;
-        await this.handleServiceRequest(req, res, UpdateUserService, { token, uuid, nome, telefone, cpf, creci, email });
+        await this.handleServiceRequest(req, res, UpdateUserService, { uuid, nome, telefone, cpf, creci, email });
     }
 
     handleUpdatePassword = async (req: Request, res: Response) => {
-        const { authorization } = req.headers;
-        if(!authorization){
-            return res.status(401).json({error: "Unauthorized"});
-        };
-        
-        const token = authorization.split(" ")[1];
         const {uuid, password, newPassword, reNewPassword} = req.body;
-        await this.handleServiceRequest(req, res, UpdatePasswordService, {token, uuid, password, newPassword, reNewPassword});
+
+        await this.handleServiceRequest(req, res, UpdatePasswordService, { uuid, password, newPassword, reNewPassword});
     }
 
     handleRecoveryPassword = async (req: Request, res: Response) => {

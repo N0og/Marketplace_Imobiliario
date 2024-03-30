@@ -1,25 +1,16 @@
-import { userRepository } from "../repository/UserRepository";
+import { userRepository } from "../../repository/UserRepository";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import {config as dotenvConfig} from 'dotenv';
 dotenvConfig();
 
-type LoginResponse = {
-    user: {
-        id: string;
-        nome: string;
-        email: string;
-    };
-    token: string;
-};
-
-type LoginRequest = {  
+type ILoginRequest = {  
     email: string;
     password: string;
 };
 
 export class LoginService{
-    async execute({ email, password }: LoginRequest): Promise<LoginResponse | Error> {
+    async execute({ email, password }: ILoginRequest) {
         const user = await userRepository.findOneBy({email});
         if (!user) {
             return new Error("Email ou senha incorretos.")
@@ -31,13 +22,20 @@ export class LoginService{
             return new Error("Email ou senha incorretos.")
         }
 
-        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET || '', { expiresIn: "1h",});
+        const token = jwt.sign({ sub: user.id }, process.env.JWT_SECRET || '', { expiresIn: "1h",});
 
-        const { password: _, ...userWithoutPassword } = user;
+        const refresh_token = jwt.sign({ sub: user.id }, process.env.JWT_REFRESH_SECRET || '', { expiresIn: "5h"})
+
+        const userWithoutInfos = {
+            id: user.id,
+            email: user.email,
+            nome: user.nome
+        }
 
         return {
-            user: userWithoutPassword,
+            user: userWithoutInfos,
             token,
+            refresh_token
         }
     }
 }

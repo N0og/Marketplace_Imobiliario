@@ -8,9 +8,12 @@ import { router } from './routes';
 dotenvConfig();
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: `${process.env.FRONT_HOST}`
+}));
 app.use(express.json());
 app.use(router)
+
 MariaDBDataSource.initialize()
     .then(async () => {
         console.log('Database has been initialized.');

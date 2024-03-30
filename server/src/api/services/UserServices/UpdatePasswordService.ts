@@ -1,4 +1,4 @@
-import { userRepository } from "../repository/UserRepository";
+import { userRepository } from "../../repository/UserRepository";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt"
 import { config as dotenvConfig } from 'dotenv'
@@ -18,15 +18,9 @@ type updatePasswordRequest = {
 }
 
 export class UpdatePasswordService {
-    async execute({token, uuid, password, newPassword, reNewPassword}: updatePasswordRequest): Promise<object|Error> {
+    async execute({uuid, password, newPassword, reNewPassword}: updatePasswordRequest): Promise<object|Error> {
 
-        const { id } = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
-
-        if (!(id === uuid)){
-            return new Error("Unauthorized")
-        };
-
-        const user = await userRepository.findOneBy({id});
+        const user = await userRepository.findOneBy({id:uuid});
 
         if (!user){
             return new Error("Usuário não cadastrado")

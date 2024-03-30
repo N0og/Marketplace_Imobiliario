@@ -35,4 +35,7 @@ export class User {
 
     @CreateDateColumn({type:"datetime", nullable:false})
     created_at: Date
+
+    @Column({type: "boolean", nullable:false, default:0})
+    authtwofactors: Boolean
 }

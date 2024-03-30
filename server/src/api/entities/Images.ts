@@ -14,7 +14,19 @@ export class Images {
     id: string
 
     @Column({type: "varchar", length: 900, nullable:true})
-    url: string
+    filename: string
+
+    @Column({type: "varchar", length: 900, nullable:true})
+    path: string
+
+    @Column({type:"int", nullable:false})
+    size: number
+
+    @Column({type: "varchar", length: 900, nullable:true})
+    type: string
+
+    @Column({type: "varchar", length: 900, nullable:true})
+    originalname: string
 
     @ManyToOne(() => Post, (post) => post.images)
     @JoinColumn({name: "post_id"})

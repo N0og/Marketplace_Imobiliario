@@ -1,4 +1,4 @@
-import { userRepository } from "../repository/UserRepository";
+import { userRepository } from "../../repository/UserRepository";
 import bcrypt from "bcrypt";
 
 
@@ -24,7 +24,7 @@ export class RegisterService{
         }
 
         if (await userRepository.findOneBy({cpf})) {
-            return new Error("CPF já cadastrada no sistema")
+            return new Error("CPF já cadastrado no sistema")
         }
 
         if (!(password === repassword)){

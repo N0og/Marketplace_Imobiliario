@@ -1,6 +1,6 @@
 import jwt, { JsonWebTokenError } from "jsonwebtoken"
 import { config as dotenvConfig } from 'dotenv'
-import { userRepository } from "../repository/UserRepository";
+import { userRepository } from "../../repository/UserRepository";
 dotenvConfig()
 
 type JwtPayload = {
@@ -15,7 +15,11 @@ export class AuthTokenService {
             if (!user) {
                 return new Error("Unauthorized");
             }
-            const { password: _, ...loggedUser } = user
+            const loggedUser = {
+                id: user.id,
+                email: user.email,
+                nome: user.nome
+            }
             return loggedUser;
         }
         catch (error) {
